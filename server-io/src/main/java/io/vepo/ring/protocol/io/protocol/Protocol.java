@@ -10,14 +10,18 @@ public interface Protocol {
 
     static int readInteger(InputStream stream) throws IOException {
         var content = new byte[4];
-        stream.read(content);
+        int read = 0;
+        while ((read += stream.read(content, read, 4 - read)) != 4)
+            ;
         return ByteBuffer.wrap(content)
                          .getInt();
     }
 
     static long readLong(InputStream stream) throws IOException {
         var content = new byte[8];
-        stream.read(content);
+        int read = 0;
+        while ((read += stream.read(content, read, 8 - read)) != 8)
+            ;
         return ByteBuffer.wrap(content)
                          .getLong();
     }
@@ -25,7 +29,9 @@ public interface Protocol {
     static String readString(InputStream stream) throws IOException {
         var sLength = readInteger(stream);
         byte[] sContent = new byte[sLength];
-        stream.read(sContent);
+        int read = 0;
+        while ((read += stream.read(sContent, read, sLength - read)) != sLength)
+            ;
         return new String(sContent, Charset.defaultCharset());
     }
 
